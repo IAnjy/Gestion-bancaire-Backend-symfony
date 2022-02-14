@@ -18,12 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "normalization_context"={"groups"="versements_subresource"}      
  *      } 
  *  },
- *  itemOperations={"GET", "solde"={
- *          "method"="post",
- *          "path" = "/versements/{id}/solde",
- *          "controller" = "App\Controller\CalculSoldeController"
- *      } 
- *  },
+ *  itemOperations={"GET"},
  *  normalizationContext={
  *      "groups"= "versements_read"
  *  },
@@ -47,7 +42,7 @@ class Versement
     /**
      * @ORM\Column(type="integer")
      * @Groups({"versements_read", "clients_read", "versements_subresource"})  
-     * @Assert\NotBlank(message="Le Montant de compte est obligatoire")
+     * @Assert\NotBlank(message="Le Montant de versement est obligatoire")
      * @Assert\Type(type="numeric", message = "Le solde doit être numérique !")
      */
     private $montantVersement;

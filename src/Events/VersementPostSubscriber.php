@@ -27,12 +27,12 @@ class VersementPostSubscriber implements EventSubscriberInterface{
      public static function getSubscribedEvents()
      {
          return[
-            KernelEvents::VIEW => ["calculSolde", EventPriorities::POST_WRITE]
+            KernelEvents::VIEW => ["calculSoldeVersement", EventPriorities::POST_WRITE]
          ];
      }
 
 
-     public function calculSolde(ViewEvent $event){
+     public function calculSoldeVersement(ViewEvent $event){
         $versement = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
         if ($versement instanceof Versement && $method === "POST") {

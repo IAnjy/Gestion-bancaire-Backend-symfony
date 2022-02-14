@@ -2,11 +2,29 @@
 
 namespace App\Entity;
 
-use App\Repository\RetraitRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\RetraitRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=RetraitRepository::class)
+ * @ApiResource(
+ *  subresourceOperations={
+ *      "api_clients_retraits_get_subresource"={
+ *          "normalization_context"={"groups"="retraits_subresource"}      
+ *      } 
+ *  },
+ * itemOperations={"GET"},
+ * normalizationContext={
+ *      "groups"= "retraits_read"
+ *  },
+ *  attributes={ "order":{"id":"desc"} }
+ * )
+ * @UniqueEntity("numCheque", message = "le numéro de chèque déjà existant !")
  */
 class Retrait
 {
@@ -14,27 +32,38 @@ class Retrait
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"retraits_read", "clients_read", "retraits_subresource"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"retraits_read", "clients_read", "retraits_subresource"})
+     * @Assert\NotBlank(message="Le numéro chèque est obligatoire")
+     * 
      */
     private $numCheque;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"retraits_read", "clients_read", "retraits_subresource"})
+     * @Assert\NotBlank(message="Le Montant de retrait est obligatoire")
+     * @Assert\Type(type="numeric", message = "Le solde doit être numérique !")
      */
     private $montantRetrait;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"retraits_read", "clients_read", "retraits_subresource"})
+     * @Assert\NotBlank(message="La Date de retrait est obligatoire")
      */
     private $dateRetrait;
 
     /**
      * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="retraits")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"retraits_read"})
+     * @Assert\NotBlank(message="Le client est obligatoire")
      */
     private $client;
 

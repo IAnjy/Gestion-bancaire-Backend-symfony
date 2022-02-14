@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Client;
+use App\Entity\Retrait;
 use App\Entity\Versement;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -13,7 +14,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $faker = Factory:: create();
+        $faker = Factory:: create("fr_FR");
 
         for($c = 1; $c <= 20; $c++){
             $client = new Client;
@@ -24,13 +25,23 @@ class AppFixtures extends Fixture
             
             $manager->persist($client);
 
-            for ($i=0; $i < mt_rand(3,8); $i++) { 
+            for ($i=0; $i < mt_rand(2,4); $i++) { 
                 $versement = new Versement;
                 $versement->setMontantVersement($faker->randomFloat(0, 10000,1200000))
                         ->setDateVersement($faker->dateTimeBetween('-6 months'))
                         ->setClient($client);
 
                 $manager->persist($versement);
+            }
+
+            for ($i=0; $i < mt_rand(2,4); $i++) { 
+                $retrait = new Retrait;
+                $retrait->setNumCheque("CQ".$faker->randomFloat(0, 100,1000))
+                        ->setMontantRetrait($faker->randomFloat(0, 10000,1200000))
+                        ->setDateRetrait($faker->dateTimeBetween('-6 months'))
+                        ->setClient($client);
+
+                $manager->persist($retrait);
             }
             
         }

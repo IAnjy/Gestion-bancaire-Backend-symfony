@@ -17,6 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass=ClientRepository::class)
  * @ApiResource(
+ *  itemOperations={"GET","PUT","DELETE"},
  *  normalizationContext={
  *      "groups"= "clients_read"
  *  }
@@ -29,20 +30,20 @@ class Client
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"clients_read", "versements_read"})
+     * @Groups({"clients_read", "versements_read", "retraits_read", "transferts_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"clients_read", "versements_read"})
+     * @Groups({"clients_read", "versements_read", "retraits_read", "transferts_read"})
      * @Assert\NotBlank(message="Le numéro de compte est obligatoire")
      */
     private $numCompte;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"clients_read", "versements_read"})
+     * @Groups({"clients_read", "versements_read", "retraits_read", "transferts_read"})
      * @Assert\NotBlank(message="Le nom de compte est obligatoire")
      * @Assert\Length(min = 3, minMessage="Le Nom doit faire au moins 3 caractères")
      */
@@ -50,13 +51,13 @@ class Client
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"clients_read", "versements_read"})
+     * @Groups({"clients_read", "versements_read", "retraits_read", "transferts_read"})
      */
     private $prenoms;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"clients_read", "versements_read"})
+     * @Groups({"clients_read", "versements_read", "retraits_read", "transferts_read"})
      * @Assert\NotBlank(message="Le nom de compte est obligatoire")
      * @Assert\Type(type="numeric", message = "Le solde doit être numérique !")
      */
@@ -71,13 +72,27 @@ class Client
 
     /**
      * @ORM\OneToMany(targetEntity=Retrait::class, mappedBy="client", orphanRemoval=true)
+     * @Groups({"clients_read"})
+     * @ApiSubresource
      */
     private $retraits;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Transfert::class, mappedBy="envoyeur", orphanRemoval=true)
+     */
+    private $transferts;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Transfert::class, mappedBy="destinataire", orphanRemoval=true)
+     */
+    private $destTranferts;
 
     public function __construct()
     {
         $this->versements = new ArrayCollection();
         $this->retraits = new ArrayCollection();
+        $this->transferts = new ArrayCollection();
+        $this->destTranferts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -187,6 +202,66 @@ class Client
             // set the owning side to null (unless already changed)
             if ($retrait->getClient() === $this) {
                 $retrait->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Transfert[]
+     */
+    public function getTransferts(): Collection
+    {
+        return $this->transferts;
+    }
+
+    public function addTransfert(Transfert $transfert): self
+    {
+        if (!$this->transferts->contains($transfert)) {
+            $this->transferts[] = $transfert;
+            $transfert->setEnvoyeur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransfert(Transfert $transfert): self
+    {
+        if ($this->transferts->removeElement($transfert)) {
+            // set the owning side to null (unless already changed)
+            if ($transfert->getEnvoyeur() === $this) {
+                $transfert->setEnvoyeur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Transfert[]
+     */
+    public function getDestTranferts(): Collection
+    {
+        return $this->destTranferts;
+    }
+
+    public function addDestTranfert(Transfert $destTranfert): self
+    {
+        if (!$this->destTranferts->contains($destTranfert)) {
+            $this->destTranferts[] = $destTranfert;
+            $destTranfert->setDestinataire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDestTranfert(Transfert $destTranfert): self
+    {
+        if ($this->destTranferts->removeElement($destTranfert)) {
+            // set the owning side to null (unless already changed)
+            if ($destTranfert->getDestinataire() === $this) {
+                $destTranfert->setDestinataire(null);
             }
         }
 
