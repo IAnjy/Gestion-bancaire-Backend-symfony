@@ -7,6 +7,8 @@ use App\Repository\TransfertRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * @ORM\Entity(repositoryClass=TransfertRepository::class)
  * @ApiResource(
@@ -27,12 +29,14 @@ class Transfert
     /**
      * @ORM\Column(type="integer")
      * @Groups({"transferts_read"})
+     * @Assert\NotBlank(message="Le montant de transfert est obligatoire")
      */
     private $montantTransfert;
 
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"transferts_read"})
+     * @Assert\NotBlank(message="La date de transfert est obligatoire")
      */
     private $DateTransfert;
 
@@ -40,6 +44,7 @@ class Transfert
      * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="transferts")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"transferts_read"})
+     * @Assert\NotBlank(message="Le client envoyeur est obligatoire")
      */
     private $envoyeur;
 
@@ -47,6 +52,7 @@ class Transfert
      * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="destTranferts")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"transferts_read"})
+     * @Assert\NotBlank(message="Le client destinataire est obligatoire")
      */
     private $destinataire;
 
