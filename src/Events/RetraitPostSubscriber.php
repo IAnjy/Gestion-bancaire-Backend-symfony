@@ -56,18 +56,18 @@ class RetraitPostSubscriber implements EventSubscriberInterface{
 
         if ($data instanceof Transfert && $method === "POST") {
            $montantTransfert = $data->getMontantTransfert();
-           $IDenvoyeur = $data->getEnvoyeur()->getId();
+           $IDexpediteur = $data->getExpediteur()->getId();
            $IDdestinataire = $data->getDestinataire()->getId();
-           $soldeEnvoyeur = $data->getEnvoyeur()->getSolde();
+           $soldeExpediteur = $data->getExpediteur()->getSolde();
            $soldeDestinataire = $data->getDestinataire()->getSolde();
-            if ($soldeEnvoyeur < $montantTransfert) {
+            if ($soldeExpediteur < $montantTransfert) {
                dd('Kely ny solde ry zoky e ');
             } else {
-               $nouveauSoldeEnvoyeur = $soldeEnvoyeur - $montantTransfert;
+               $nouveauSoldeExpediteur = $soldeExpediteur - $montantTransfert;
                $nouveauSoldeDestinataire = $soldeDestinataire + $montantTransfert;
 
-               $client1 = $this->client->find($IDenvoyeur);
-               $client1->setSolde($nouveauSoldeEnvoyeur);
+               $client1 = $this->client->find($IDexpediteur);
+               $client1->setSolde($nouveauSoldeExpediteur);
 
                $client = $this->client->find($IDdestinataire);
                $client->setSolde($nouveauSoldeDestinataire);

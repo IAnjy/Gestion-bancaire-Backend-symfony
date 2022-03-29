@@ -78,21 +78,28 @@ class Client
     private $retraits;
 
     /**
-     * @ORM\OneToMany(targetEntity=Transfert::class, mappedBy="envoyeur", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Transfert::class, mappedBy="expediteur", orphanRemoval=true)
+     * @Groups({"clients_read"})
+     * @ApiSubresource
      */
-    private $transferts;
+    private $expediteurs;
 
     /**
      * @ORM\OneToMany(targetEntity=Transfert::class, mappedBy="destinataire", orphanRemoval=true)
+     * @Groups({"clients_read"})
+     * @ApiSubresource
      */
-    private $destTranferts;
+    private $destinataires;
+
+
+    
 
     public function __construct()
     {
         $this->versements = new ArrayCollection();
         $this->retraits = new ArrayCollection();
-        $this->transferts = new ArrayCollection();
-        $this->destTranferts = new ArrayCollection();
+        $this->expediteurs = new ArrayCollection();
+        $this->destinataires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -211,27 +218,27 @@ class Client
     /**
      * @return Collection|Transfert[]
      */
-    public function getTransferts(): Collection
+    public function getExpediteurs(): Collection
     {
-        return $this->transferts;
+        return $this->expediteurs;
     }
 
-    public function addTransfert(Transfert $transfert): self
+    public function addExpediteur(Transfert $expediteur): self
     {
-        if (!$this->transferts->contains($transfert)) {
-            $this->transferts[] = $transfert;
-            $transfert->setEnvoyeur($this);
+        if (!$this->expediteurs->contains($expediteur)) {
+            $this->expediteurs[] = $expediteur;
+            $expediteur->setExpediteur($this);
         }
 
         return $this;
     }
 
-    public function removeTransfert(Transfert $transfert): self
+    public function removeExpediteur(Transfert $expediteur): self
     {
-        if ($this->transferts->removeElement($transfert)) {
+        if ($this->expediteurs->removeElement($expediteur)) {
             // set the owning side to null (unless already changed)
-            if ($transfert->getEnvoyeur() === $this) {
-                $transfert->setEnvoyeur(null);
+            if ($expediteur->getExpediteur() === $this) {
+                $expediteur->setExpediteur(null);
             }
         }
 
@@ -241,30 +248,33 @@ class Client
     /**
      * @return Collection|Transfert[]
      */
-    public function getDestTranferts(): Collection
+    public function getDestinataires(): Collection
     {
-        return $this->destTranferts;
+        return $this->destinataires;
     }
 
-    public function addDestTranfert(Transfert $destTranfert): self
+    public function addDestinataire(Transfert $destinataire): self
     {
-        if (!$this->destTranferts->contains($destTranfert)) {
-            $this->destTranferts[] = $destTranfert;
-            $destTranfert->setDestinataire($this);
+        if (!$this->destinataires->contains($destinataire)) {
+            $this->destinataires[] = $destinataire;
+            $destinataire->setDestinataire($this);
         }
 
         return $this;
     }
 
-    public function removeDestTranfert(Transfert $destTranfert): self
+    public function removeDestinataire(Transfert $destinataire): self
     {
-        if ($this->destTranferts->removeElement($destTranfert)) {
+        if ($this->destinataires->removeElement($destinataire)) {
             // set the owning side to null (unless already changed)
-            if ($destTranfert->getDestinataire() === $this) {
-                $destTranfert->setDestinataire(null);
+            if ($destinataire->getDestinataire() === $this) {
+                $destinataire->setDestinataire(null);
             }
         }
 
         return $this;
     }
+
+
+    
 }

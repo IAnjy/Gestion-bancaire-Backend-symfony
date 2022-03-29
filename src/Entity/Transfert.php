@@ -7,14 +7,19 @@ use App\Repository\TransfertRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-use Symfony\Component\Validator\Constraints as Assert;
-
 /**
- * @ORM\Entity(repositoryClass=TransfertRepository::class)
  * @ApiResource(
+ * subresourceOperations={
+ *      "api_clients_transferts_get_subresource"={
+ *          "normalization_context"={"groups"="transferts_subresource"}      
+ *      } 
+ *  },
  *  itemOperations={"GET"},
- *  normalizationContext={"groups" = "transferts_read"}
+ * normalizationContext={
+ *      "groups"= "transferts_read"
+ *  }
  * )
+ * @ORM\Entity(repositoryClass=TransfertRepository::class)
  */
 class Transfert
 {
@@ -22,37 +27,33 @@ class Transfert
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"transferts_read"})
+     * @Groups({"transferts_read", "clients_read", "transferts_subresource"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"transferts_read"})
-     * @Assert\NotBlank(message="Le montant de transfert est obligatoire")
+     * @Groups({"transferts_read", "clients_read", "transferts_subresource"})
      */
     private $montantTransfert;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"transferts_read"})
-     * @Assert\NotBlank(message="La date de transfert est obligatoire")
+     * @Groups({"transferts_read", "clients_read", "transferts_subresource"})
      */
-    private $DateTransfert;
+    private $dateTransfert;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="transferts")
+     * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="expediteurs")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"transferts_read"})
-     * @Assert\NotBlank(message="Le client envoyeur est obligatoire")
      */
-    private $envoyeur;
+    private $expediteur;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="destTranferts")
+     * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="destinataires")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"transferts_read"})
-     * @Assert\NotBlank(message="Le client destinataire est obligatoire")
      */
     private $destinataire;
 
@@ -75,24 +76,24 @@ class Transfert
 
     public function getDateTransfert(): ?\DateTimeInterface
     {
-        return $this->DateTransfert;
+        return $this->dateTransfert;
     }
 
-    public function setDateTransfert(\DateTimeInterface $DateTransfert): self
+    public function setDateTransfert(\DateTimeInterface $dateTransfert): self
     {
-        $this->DateTransfert = $DateTransfert;
+        $this->dateTransfert = $dateTransfert;
 
         return $this;
     }
 
-    public function getEnvoyeur(): ?Client
+    public function getExpediteur(): ?Client
     {
-        return $this->envoyeur;
+        return $this->expediteur;
     }
 
-    public function setEnvoyeur(?Client $envoyeur): self
+    public function setExpediteur(?Client $expediteur): self
     {
-        $this->envoyeur = $envoyeur;
+        $this->expediteur = $expediteur;
 
         return $this;
     }
